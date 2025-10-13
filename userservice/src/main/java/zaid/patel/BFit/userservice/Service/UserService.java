@@ -7,4 +7,6 @@ public interface UserService {
     UserResponseDto register(RegisterRequesrDto request);
 
     UserResponseDto getUser(String userId);
+
+    Boolean validateUser(String userId);
 }

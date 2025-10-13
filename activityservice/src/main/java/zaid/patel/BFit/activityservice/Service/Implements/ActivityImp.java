@@ -12,9 +12,14 @@ import zaid.patel.BFit.activityservice.Service.ActivityService;
 @RequiredArgsConstructor
 public class ActivityImp implements ActivityService {
     private final ActivityRepository activityRepository;
+    private final UserValidartionService userValidartionService;
 
     @Override
     public ActivityResponseDto trackActivity(ActivityRequestDto request) {
+        boolean isValid = userValidartionService.validateUser(request.getUserId());
+        if(!isValid){
+            throw new RuntimeException("Invalid User: "+ request.getUserId());
+        }
         Activity activity = Activity.builder()
                 .userId(request.getUserId())
                 .type(request.getType())

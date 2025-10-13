@@ -1,6 +1,7 @@
 package zaid.patel.BFit.userservice.Service.Implements;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import zaid.patel.BFit.userservice.DTO.RegisterRequesrDto;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
@@ -57,5 +59,10 @@ public class UserServiceImp implements UserService {
         return userResponseDto;
     }
 
+    @Override
+    public Boolean validateUser(String userId) {
+        log.info("Calling User Service for {}", userId);
+        return userRepository.existsById(userId);
+    }
 
 }
