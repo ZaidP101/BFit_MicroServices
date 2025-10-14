@@ -5,6 +5,15 @@ spring:
     mongodb:
       uri: mongodb://localhost:27017/activitybfit
       database: activitybfit
+  kafka:
+    bootstrap-server: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+kafka:
+  topic:
+    name: activity-events
 
 eureka:
   client:
@@ -13,3 +22,4 @@ eureka:
 
 server:
   port: 8082
+

@@ -1,6 +1,8 @@
 package zaid.patel.BFit.activityservice.Service.Implements;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import zaid.patel.BFit.activityservice.DTO.ActivityRequestDto;
 import zaid.patel.BFit.activityservice.DTO.ActivityResponseDto;
@@ -13,6 +15,10 @@ import zaid.patel.BFit.activityservice.Service.ActivityService;
 public class ActivityImp implements ActivityService {
     private final ActivityRepository activityRepository;
     private final UserValidartionService userValidartionService;
+
+    @Value("${kafka.topic.name}")
+    private String topicName;
+    private final KafkaTemplate<String, Activity> kafkaTemplate;
 
     @Override
     public ActivityResponseDto trackActivity(ActivityRequestDto request) {
@@ -29,6 +35,12 @@ public class ActivityImp implements ActivityService {
                 .additionalMetrics(request.getAdditionalMetrics())
                 .build();
         Activity savedActivity = activityRepository.save(activity);
+        try {
+            kafkaTemplate.send(topicName,savedActivity.getUserId(), savedActivity);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         return mapToResponse(savedActivity);
     }
 
