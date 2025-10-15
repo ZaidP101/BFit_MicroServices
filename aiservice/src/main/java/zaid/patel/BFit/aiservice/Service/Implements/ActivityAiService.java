@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import zaid.patel.BFit.aiservice.Entity.Activity;
 import zaid.patel.BFit.aiservice.Entity.Recommendations;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -47,12 +48,82 @@ public class ActivityAiService {
             addAnalysisSection(fullAnalysis, analysisNode, "heartRate", "Heart Rate:");
             addAnalysisSection(fullAnalysis, analysisNode, "caloriesBurned", "Calories:");
 
-            List<String> improvement = extactImprovents(analysisJson.path("improvements"))
+            List<String> improvement = extractImprovements(analysisJson.path("improvements"));
+            List<String> suggestions = extractSuggestions(analysisJson.path("suggestions"));
+            List<String> safety = extractsafetyGuideline(analysisJson.path("safety"));
+
+            return Recommendations.builder()
+                    .activityId(activity.getId())
+                    .userId(activity.getUserId())
+                    .type(activity.getType().toString())
+                    .recommendation(fullAnalysis.toString())
+                    .improvements(improvement)
+                    .suggestions(suggestions)
+                    .safety(safety)
+                    .createdAt(LocalDateTime.now())
+                    .build();
         }
         catch (Exception e){
-
+            e.printStackTrace();
+            return createDefaultRecommendation(activity);
         }
-        return null;
+    }
+
+    private Recommendations createDefaultRecommendation(Activity activity) {
+        return Recommendations.builder()
+                .activityId(activity.getId())
+                .userId(activity.getUserId())
+                .type(activity.getType().toString())
+                .recommendation("Unable to generate detailed analysis")
+                .improvements(Collections.singletonList("Continue with your current routine"))
+                .suggestions(Collections.singletonList("Consider Consulting a Professional"))
+                .safety(Arrays.asList(
+                        "Always warm up before exercise",
+                        "Stay hydrated",
+                        "Lisen to tour body"
+                ))
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    private List<String> extractsafetyGuideline(JsonNode safetyNode) {
+        List<String> safety = new ArrayList<>();
+        if (safetyNode.isArray()){
+            safetyNode.forEach(item ->{
+                safety.add(item.asText());
+            });
+        }
+        return safety.isEmpty() ?
+                Collections.singletonList("Follow general Safety Guidelines") :
+                safety;
+    }
+
+    private List<String> extractSuggestions(JsonNode suggestionNode) {
+        List<String> suggestions = new ArrayList<>();
+        if (suggestionNode.isArray()){
+            suggestionNode.forEach(suggestion ->{
+                String workout = suggestion.path("workout").asText();
+                String description = suggestion.path("description ").asText();
+                suggestions.add(String.format("%s: %s", workout, description));
+            });
+        }
+        return suggestions.isEmpty() ?
+                Collections.singletonList("No Suggestions provided") :
+                suggestions;
+    }
+
+    private List<String> extractImprovements(JsonNode improvementNode) {
+        List<String> improvements = new ArrayList<>();
+        if (improvementNode.isArray()){
+            improvementNode.forEach(improvement ->{
+                String area = improvement.path("area").asText();
+                String details = improvement.path("details ").asText();
+                improvements.add(String.format("%s: %s", area, details));
+            });
+        }
+        return improvements.isEmpty() ?
+                Collections.singletonList("No Recommendations provided") :
+                improvements;
     }
 
     private void addAnalysisSection(StringBuilder fullAnalysis, JsonNode analysisNode, String key, String prefix) {
