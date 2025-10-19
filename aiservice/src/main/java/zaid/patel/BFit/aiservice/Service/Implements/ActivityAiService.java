@@ -3,8 +3,6 @@ package zaid.patel.BFit.aiservice.Service.Implements;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import zaid.patel.BFit.aiservice.Entity.Activity;
@@ -30,7 +28,7 @@ public class ActivityAiService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(aiResponse);
-            JsonNode textNode = rootNode.path("candidate")
+            JsonNode textNode = rootNode.path("candidates")
                     .get(0)
                     .path("content")
                     .get("parts")
@@ -159,7 +157,7 @@ public class ActivityAiService {
                             "safety": [
                                 "Safety point 1",
                                 "Safety point 2"
-                            ]         
+                            ]
                         }
                         Analyze this activity:
                         Activity Type: %s

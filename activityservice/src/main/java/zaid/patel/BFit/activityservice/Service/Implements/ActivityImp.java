@@ -46,6 +46,7 @@ public class ActivityImp implements ActivityService {
 
     private ActivityResponseDto mapToResponse(Activity activity) {
         ActivityResponseDto response = new ActivityResponseDto();
+        response.setId(activity.getId());
         response.setUserId(activity.getUserId());
         response.setType(activity.getType());
         response.setDuration(activity.getDuration());
