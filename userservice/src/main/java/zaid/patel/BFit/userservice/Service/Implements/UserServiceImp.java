@@ -23,7 +23,16 @@ public class UserServiceImp implements UserService {
     public UserResponseDto register(RegisterRequesrDto request) {
 
         if(userRepository.existsByEmail(request.getEmail())){
-            throw new IllegalArgumentException("Email already exist");
+            User existingUser = userRepository.findByEmail(request.getEmail());
+            UserResponseDto userResponseDto = new UserResponseDto();
+            userResponseDto.setId(existingUser.getId());
+            userResponseDto.setEmail(existingUser.getEmail());
+            userResponseDto.setPassword(existingUser.getPassword());
+            userResponseDto.setFirstName(existingUser.getFirstName());
+            userResponseDto.setLastName(existingUser.getLastName());
+            userResponseDto.setCreatedAt(existingUser.getCreatedAt());
+            userResponseDto.setUpdatedAt(existingUser.getUpdatedAt());
+            return userResponseDto;
         }
 
         User user = new User();
@@ -62,7 +71,7 @@ public class UserServiceImp implements UserService {
     @Override
     public Boolean validateUser(String userId) {
         log.info("Calling User Service for {}", userId);
-        return userRepository.existsById(userId);
+        return userRepository.existsByKeycloakId(userId);
     }
 
 }
