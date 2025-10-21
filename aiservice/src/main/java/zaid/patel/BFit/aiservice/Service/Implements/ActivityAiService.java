@@ -78,7 +78,7 @@ public class ActivityAiService {
                 .safety(Arrays.asList(
                         "Always warm up before exercise",
                         "Stay hydrated",
-                        "Lisen to tour body"
+                        "Listen to tour body"
                 ))
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -127,6 +127,7 @@ public class ActivityAiService {
     private void addAnalysisSection(StringBuilder fullAnalysis, JsonNode analysisNode, String key, String prefix) {
         if(!analysisNode.path(key).isMissingNode()){
             fullAnalysis.append(prefix)
+                    .append(analysisNode.path(key).asText())
                     .append("\n\n");
         }
     }

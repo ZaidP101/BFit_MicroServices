@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
-@Document(collation = "activities")
+@Document(collection = "activities")
 @Data
 @Builder
 @AllArgsConstructor
