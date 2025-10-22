@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class RegisterRequesrDto {
+    private String keycloakId;
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid Formate")
     private String email;

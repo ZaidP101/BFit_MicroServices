@@ -36,6 +36,7 @@ public class UserServiceImp implements UserService {
         }
 
         User user = new User();
+        user.setKeycloakId(request.getKeycloakId());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
         user.setFirstName(request.getFirstName());
@@ -44,6 +45,7 @@ public class UserServiceImp implements UserService {
         User savedUser = userRepository.save(user);
         UserResponseDto userResponseDto = new UserResponseDto();
         userResponseDto.setId(savedUser.getId());
+        userResponseDto.setKeycloakId(savedUser.getKeycloakId());
         userResponseDto.setEmail(savedUser.getEmail());
         userResponseDto.setPassword(savedUser.getPassword());
         userResponseDto.setFirstName(savedUser.getFirstName());

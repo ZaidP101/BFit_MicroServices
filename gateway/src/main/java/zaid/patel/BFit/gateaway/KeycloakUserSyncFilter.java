@@ -4,8 +4,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -23,7 +22,7 @@ public class KeycloakUserSyncFilter implements WebFilter {
     private final UserService userService;
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) { // mono means a promise, that there will be a value here since its an asynchronous call
         String token = exchange.getRequest().getHeaders().getFirst("Authorization");
         String userId = exchange.getRequest().getHeaders().getFirst("X-User-ID");
         RegisterRequestDto requestDto = getUserDetails(token);
@@ -37,7 +36,7 @@ public class KeycloakUserSyncFilter implements WebFilter {
                         if(!exist){
                             if(requestDto != null){
                                 return userService.registerUser(requestDto)
-                                        .then(Mono.empty());
+                                        .then(Mono.empty()); // a Mono that completes successfully without emitting any value
                             } else {
                                 return Mono.empty();
                             }
@@ -46,15 +45,15 @@ public class KeycloakUserSyncFilter implements WebFilter {
                             return Mono.empty();
                         }
                     })
-                    .then(Mono.defer(() -> {
-                        ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                    .then(Mono.defer(() -> { // Mono.defer means the part will get executed only after the execution of the upper part
+                        ServerHttpRequest mutatedRequest = exchange.getRequest().mutate() // mutate means change
                                 .header("X-User-ID", finalUserId)
                                 .build();
-                        return chain.filter(exchange.mutate().request(mutatedRequest).build());
+                        return chain.filter(exchange.mutate().request(mutatedRequest).build()); // the entire .then is adding the user ID in header irrespective of user existence
         }));
         }
 
-        return null;
+        return chain.filter(exchange);
     }
 
     private RegisterRequestDto getUserDetails(String token) {
