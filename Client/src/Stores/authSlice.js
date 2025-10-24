@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-
 const authSlice = createSlice({
   name: 'auth',
   initialState : {
@@ -15,8 +14,8 @@ const authSlice = createSlice({
         state.userId = action.payload.user.sub // sub has the userId
 
         localStorage.setItem('token', action.payload.token)
-        localStorage.setItem('user', JSON.parse(action.payload.user))
-        localStorage.setItem('userId'. action.payload.user.sub)
+        localStorage.setItem('user', JSON.stringify(action.payload.user))
+        localStorage.setItem('userId', action.payload.user.sub)
     },
     logout : (state) =>{
       state.user = null

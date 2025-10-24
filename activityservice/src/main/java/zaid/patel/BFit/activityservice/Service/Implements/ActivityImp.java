@@ -10,6 +10,9 @@ import zaid.patel.BFit.activityservice.Entity.Activity;
 import zaid.patel.BFit.activityservice.Repository.ActivityRepository;
 import zaid.patel.BFit.activityservice.Service.ActivityService;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ActivityImp implements ActivityService {
@@ -43,6 +46,15 @@ public class ActivityImp implements ActivityService {
         }
         return mapToResponse(savedActivity);
     }
+
+    @Override
+    public List<ActivityResponseDto> getUserActivity(String userId) {
+        List<Activity> activityList = activityRepository.findByUserId(userId);
+        return activityList.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
 
     private ActivityResponseDto mapToResponse(Activity activity) {
         ActivityResponseDto response = new ActivityResponseDto();
